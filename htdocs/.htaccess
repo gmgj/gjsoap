@@ -1,0 +1,18 @@
+IndexIgnore .htaccess XXSoftwareTools gjphp includes ourAdmin images
+DirectoryIndex index.php
+ErrorDocument 400 /400.shtml
+ErrorDocument 401 /401.shtml
+ErrorDocument 403 /403.shtml
+ErrorDocument 404 /404.shtml
+ErrorDocument 500 /500.shtml
+#<Limit GET POST>
+#order deny,allow
+#deny from all
+#allow from all
+#</Limit>
+#<Limit PUT DELETE>
+#order deny,allow
+#deny from all
+#</Limit>
+#AuthName garyjohnsoninfo.info
+#Options -Indexes

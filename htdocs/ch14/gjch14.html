@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<meta name="Author" CONTENT="Gary G. Johnson">
+<meta name="ROBOTS" CONTENT="INDEX">
+<meta name="Description" content="Chaper 13">
+<link rel="icon" href="../images/favicon.ico" type="image/x-icon">
+<link rel="StyleSheet" href="../XXSoftwareTools/css/musings.css" type="text/css">
+
+<title>Chapter 14 Review</title>
+</head>
+
+<body lang=EN-US>
+<p class="pos_fixed">Live, Laugh, Love, Leave......Let others do the same.</p>
+
+<h2 style="padding:2em 0 0 0; text-align:center" >Chapter 14 Review</h2>
+
+<div id="adiv" style="position:relative;height:auto; margin:0 4em 0 4em;">
+
+
+<p class="hrc"></p>
+<pre>
+
+&rsaquo; What is Xdebug? What useful features does it provide?
+Xdebug is a PHP extension which provides debugging and profiling capabilities.
+It uses the DBGp debugging protocol.
+
+The debug information that Xdebug can provide includes the following:
+
+    stack and function traces in error messages with:
+
+        full parameter display for user defined functions
+        function name, file name and line indications
+        support for member functions
+
+    memory allocation
+    protection for infinite recursions
+
+Xdebug also provides:
+
+    profiling information for PHP scripts
+    code coverage analysis
+    capabilities to debug your scripts interactively with a debugger front-end.
+
+Xdebug is also available via the PECL library.
+
+</pre>
+
+<p class="hrc"></p>
+<pre class="tr">
+
+&rsaquo; What is unit testing? What are the benefits of unit testing?
+The premise of unit testing is that you define tests to confirm that particular bits of code work
+as needed. Here are a few of the benefits of unit testing:
+
+Tests will minimize bugs (this is the most obvious benefit).
+Tests can help you improve your design.
+Tests can assist in creating documentation for your code.
+You are less likely to break code and introduce errors as you make changes down the line.
+
+What are some of the properties that unit tests should exhibit?
+I write tests that call the use code in the most common way and with exception condtions.
+I continually add to and expand upon the test code.
+
+</pre>
+
+
+
+<p class="hrc"></p>
+<pre>
+
+&rsaquo; What is TDD?
+test-driven development (TDD).
+you define your tests and then write code that passes those tests.
+
+</pre>
+
+
+<p class="hrc"></p>
+<pre>
+
+&rsaquo; What are assertions?
+Confirm that this is the case.
+assertContains( $needle, $haystack);
+Because this is an assertion, this test would fail if the needle is not found within the haystack.
+This is functionally equivalent to
+if (!in_array( $needle, $haystack)) {
+     echo 'The test has failed!';
+}
+
+How do you invoke the assertion methods within the test class?
+        $this->assertEquals($this->_data, file_get_contents($this->_file));
+
+</pre>
+
+<p class="hrc"></p>
+<pre>
+
+&rsaquo;How do you create a test suite?
+Begin a new PHP script in your text editor or IDE, to be named XXXXXX.php
+
+you create a test suite by extending the PHPUnit_Framework_TestCase class:
+
+class SomeClassTest extends PHPUnit_Framework_TestCase { }
+Conventionally, you'll name the new class a combination of the name of the class being tested,
+followed by Test.
+
+</pre>
+
+<p class="hrc"></p>
+<pre>
+
+
+&rsaquo; How do you create a test case (a suite of tests) using PHPUnit?
+         How do you create an individual test?
+
+Within this class, create one new public method for each test.
+Each method's name should start with test: function testSomething()
+
+</pre>
+
+<p class="hrc"></p>
+<pre>
+
+
+&rsaquo; What is profiling? What is webgrind?
+Profiling is the process of analyzing a script to see where there may be performance problems: slow bits of code and process bottlenecks.
+
+webgrind reads the xdebug profiling information whcih is stored using the
+'cachegrind' format.
+
+Change php.ini
+xdebug.profiler_enable = 1
+xdebug.profiler_output_name = cachegrind.out.%t.%p
+xdebug.profiler_output_dir to a writable temporary directory .
+
+
+</pre>
+
+<p class="hrc"></p>
+<pre>
+
+&rsaquo; What kinds of things should you be watching for in profile data?
+Start by
+looking at two possible indicators of inefficiency:
+
+&rsaquo; Processes that take disproportionately more time than the others
+&rsaquo; Processes that take disproportionately more time than they should
+
+You should not focus on the specific amount of time different bits of code require to execute.
+Those times are unlikely to be that accurate.
+At the very least, the mere act of profiling a script is going to drag down its performance.
+Instead,
+&rsaquo; at the time a process takes relative to the whole script.
+There will be processes that you would expect to take a lot of time, but there will
+also be those that shouldn't.
+
+&rsaquo; at the first category in hopes of making significant gains;
+&rsaquo; at the second because something may be amiss.
+
+In particular, input/ output operations will normally be the most expensive:
+Working with files
+Interacting with databases
+Networking (i.e., communicating with other servers)
+Interacting with the server (this includes working with files and databases,
+of course, as well as sending emails, calling other utilities, and so forth)
+
+
+
+
+</pre>
+
+</div>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

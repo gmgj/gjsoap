@@ -1,0 +1,3 @@
+php hwsoapcmdclient.php
+
+pause
