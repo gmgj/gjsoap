@@ -1,4 +1,4 @@
-.htaccess
+htdocs/.htaccess
 conf/*
 *.zip
 *.log
