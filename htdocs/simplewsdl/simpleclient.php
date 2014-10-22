@@ -32,6 +32,8 @@ try{
 	echo "<pre style='margin:2em;'>";
 	print_r($fault);
 	//echo 'Soap Error - faultcode: '.$fault->faultcode.' faultstring: '.$fault->faultstring;
+
+	generateDebugReport('browser',get_defined_vars());
 	print "</pre>";
 }
 echo "<pre style='margin:2em;'>";

@@ -13,36 +13,19 @@ add a javascript to update a cookie onstead of using ob_start
 */
 function gjerror_log($strin) {
 global $gjDebug;
+
     if (isset($gjDebug) && $gjDebug) {
         error_log($strin);
     }
 }
-
-function display_file_as_text($filein) {
-    $file = fopen ($filein, "rb");
-    $lines = fread ($file, filesize ($filein));
-    fclose ($file);
-    echo "<pre style='margin:2em;'><code>";
-    echo $lines;
-    echo '</code></pre>';
-}
-
-function curPageURL() {
-    $pageURL = 'http';
-    if(isset($_SERVER["HTTPS"])) {
-    	if($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
-    }
-    $pageURL .= "://";
-    if ($_SERVER["SERVER_PORT"] != "80") {
-    	$pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
-    } else {
-    	$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-    }
-    return $pageURL;
-}
-
-function curPageName() {
-	return substr($_SERVER["SCRIPT_NAME"],strrpos($_SERVER["SCRIPT_NAME"],"/")+1);
+//I want a way to pass variables back and forth, this does not work yet
+//I think I will need to use a session variable
+function js_SetVar($gjVar) {
+    echo "<script language=\"JavaScript\">\n";
+//echo "gjDebug = '".$gjDebug."';\n";
+    echo "$gjVar = '".$gjVar."';\n";
+    echo "</script>\n";
+return true;
 }
 
 function js_redirect($url, $millseconds=5) {
@@ -97,7 +80,7 @@ function mailMeHTML($ok, $to,$subject,$msg) {
     }
 }
 
-function checktext($strin){
+function checktext($strin) {
     //'      -          .       0-  9        A-  Z      `        a-   z   sp     ?  ?       ?  ?      ?
     // [\x27\x2D\x2E\x30-\x39\x41-\x5a\x60\x61-\x7a\s\xC0-\xD6\xD8-\xF6\xF8-\xFF]+;
 
@@ -132,33 +115,6 @@ function checkemail($strin) {
     return true;
 }
 
-function displaydefinedVariables($gjarrayIn) {
-$msgd ='<h1>defined variables</h1>';
-$msgd.='<table class="pt"><tr><th>variable</th> <th>value</th> </tr>';
-
-    foreach ($gjarrayIn as $key => $value) {
-    	if (is_array ($value)) {
-    		$msgd.='<tr><td>$'.$key . '</td><td>';
-    		if ( sizeof($value)>0 ) {
-    			$msgd.='<table class="ft"><tr> <th>key</th> <th>value</th> </tr>';
-    			foreach ($value as $skey => $svalue) {
-    				//Array to string conversion
-    				$msgd.='<tr><td>[' . $skey .']</td><td>"'. $svalue .'"</td></tr>';
-    			}
-    			$msgd.='</table>"';
-    		} else {
-    			$msgd.='EMPTY';
-    		}
-    		$msgd.='</td></tr>';
-    	} else {
-    		$msgd.='<tr><td>$' . $key .'</td><td>"'. $value .'"</td></tr>';
-    	}
-    }
-
-$msgd.='</table>';
-$msgd.="<HR>";
-}
-
 function logToFile($msg) {
   $fd = fopen("logfile.txt", "a");
     if($fd) {
@@ -169,27 +125,45 @@ function logToFile($msg) {
       error_log("+++***".$msg,0); //php system logger
     }
 }
-/* set $gjLocal and $gjDebug and call */
 
 
-function gjShowErrors() {
-//call this first after session start
-global $gjDebug;
-global $gjXDebug;
-global $gjLocal;
+//old use generatedebugreport instead
 
-if ($gjDebug) {
-    // old stuff does not do well with E_STRICT error_reporting(E_ALL | E_STRICT);
-    //error_reporting(E_ALL | E_STRICT);
-    error_reporting(E_ALL);
-    ini_set('display_errors',1);
-    ini_set('log_errors',1); //!!!!!
-} else {
-    error_reporting(E_COMPILE_ERROR|E_ERROR|E_CORE_ERROR);
-	// error_reporting(E_ALL & ~E_DEPRECATED);
-    ini_set('display_errors',0);
-    ini_set('log_errors',0);
+function displaydefinedVariables($gjarrayIn)
+{
+echo '<h1>defined variables</h1>';
+echo '<table class="pt"><tr><th>variable</th> <th>value</th> </tr>';
+foreach ($gjarrayIn as $key => $value) {
+    if (is_array ($value)) {
+        echo '<tr><td>$'.$key . '</td><td>';
+        if ( sizeof($value)>0 ) {
+            echo '<table class="ft"><tr> <th>key</th> <th>value</th> </tr>';
+            foreach ($value as $skey => $svalue) {
+               //Array to string conversion
+                echo '<tr><td>[' . $skey .']</td><td>"'. $svalue .'"</td></tr>';
+            }
+            echo '</table>"';
+        } else {
+            echo 'EMPTY';
+        }
+        echo '</td></tr>';
+    } else {
+        echo '<tr><td>$' . $key .'</td><td>"'. $value .'"</td></tr>';
+    }
 }
+echo '</table>';
+echo "<HR>";
+}
+
+/* set gjLocal to true and call */
+
+function gjShowErrors() { //call this first after session start
+error_reporting(E_ALL); //for test if sessionstart put it after error_reporting
+ini_set('display_errors',1);  // 1 to display errors
+ini_set('log_errors',1);
+
+global $gjDebug;
+global $gjLocal;
 
 //usually have to set this in php.ini
 //xdebug_disable();
@@ -235,24 +209,23 @@ ini_set('xdebug.var_display_max_depth', '-1');
 
 
 //not set up on hosted accounts
-if ($gjLocal && $gjXDebug) {
-	try {
-		xdebug_enable();
+if ($gjLocal) {
+    try {
+        xdebug_enable();
 
-		if (xdebug_is_enabled()) {
-			error_log ('stack traces are enabled - debugging');
-			//xdebug_start_error_collection();
-			error_log ('xdebug_memory_usage() '. number_format(xdebug_memory_usage()));
-			xdebug_start_trace();
-		} else {
-			error_log ('xdebug is not enabled not debugging');
-		}
+        if (xdebug_is_enabled()) {
+            echo 'stack traces are enabled - debugging<BR>';
+            //xdebug_start_error_collection();
+            echo 'xdebug_memory_usage() '. number_format(xdebug_memory_usage()).'<BR>';
+            xdebug_start_trace();
+            } else {
+            echo 'not debugging<br>';
+        }
 
-	} catch (Exception $e) {
-		error_log('Caught Exception -> message: ',  $e->getMessage());
-		echo 'Caught Exception -> message: ',  $e->getMessage(), "\n";
-		//   or if extended over ridden exception var_dump e->getMessage()
-	}
+    } catch (Exception $e) {
+        echo 'Caught Exception -> message: ',  $e->getMessage(), "\n";
+        //   or if extended over ridden exception var_dump e->getMessage()
+    }
 }
 
 
@@ -285,5 +258,113 @@ $host = substr($_SERVER['SERVER_NAME'], 0, 5);
 		return true;
 	} else {
 		return false;
+	}
+}
+
+//  $Arr = obj2array($Obj);
+//   print_r ( $Arr );
+
+function obj2array( &$Instance ) {
+    $clone = (array) $Instance;
+    $rtn = array ();
+    $rtn['___SOURCE_KEYS_'] = $clone;
+
+    while ( list ($key, $value) = each ($clone) ) {
+        $aux = explode ("\0", $key);
+        $newkey = $aux[count($aux)-1];
+        $rtn[$newkey] = &$rtn['___SOURCE_KEYS_'][$key];
+    }
+
+    return $rtn;
+}
+
+
+	// adapted from get_define_vars comments on php.net
+	// Function to create a debug report to display or email.
+	// Usage: generateDebugReport(method,get_defined_vars(),email[optional]);
+	// Where method is "browser" or "email".
+
+	// Create an ignore list for keys returned by 'get_defined_vars'.
+	// For example, HTTP_POST_VARS, HTTP_GET_VARS and others are
+	// redundant (same as _POST, _GET)
+	// Also include vars you want ignored for security reasons - i.e. PHPSESSID.
+function generateDebugReport($method,$defined_vars,$email="undefined"){
+	$ignorelist=array(
+	"HTTP_POST_VARS",
+	"HTTP_GET_VARS",
+	"HTTP_COOKIE_VARS",
+	"HTTP_SERVER_VARS",
+	"HTTP_ENV_VARS",
+	"HTTP_SESSION_VARS",
+	"_ENV","PHPSESSID",
+	"SESS_DBUSER",
+	"SESS_DBPASS",
+	"HTTP_COOKIE",
+	#xml
+	"CoreFilingMessage",
+	"responseSOAP",
+	"RecordDocketingMessage",
+	"PaymentMessage",
+	# cast as array
+	#"SoapClient",
+	#"DB_FPECF",
+	# "DOMDocument",
+	# maybe, maybe not
+	"_SERVER",
+	"GLOBALS"
+	);
+
+	$timestamp=date("m/d/y h:m:s");
+	$message="Debug report created $timestamp\n";
+
+	// Get the last SQL error for good measure, where $link is the resource identifier
+	// for mysql_connect. Comment out or modify for your database or abstraction setup.
+	//global $link;
+	//$sql_error=mysql_error($link);
+	//if($sql_error){
+	//  $message.="\nMysql Messages:\n".mysql_error($link);
+	// }
+	// End MySQL
+
+	// Could use a recursive function here. You get the idea ;-)
+	foreach($defined_vars as $key=>$val){
+		if(is_object($val)) {	$val = obj2array($val); $message.= ' obj2array: ' . "\n";}
+		if(is_array($val) && !in_array($key,$ignorelist) && count($val) > 0){
+			$message.="\n$key array (key=value):\n";
+			foreach($val as $subkey=>$subval){
+				if(!in_array($subkey,$ignorelist) && !is_array($subval)){
+					$message.=$subkey." = ".$subval."\n";
+				}
+				elseif(!in_array($subkey,$ignorelist) && is_array($subval)){
+					foreach($subval as $subsubkey=>$subsubval){
+						if(!in_array($subsubkey,$ignorelist)){
+							$message.=$subsubkey." = ".$subsubval."\n";
+						}
+					}
+				}
+			}
+		}
+		elseif(!is_array($val) && !in_array($key,$ignorelist) && $val){
+			if(is_object($val)) {$val = obj2array($val); $message.= ' obj2array: ' . "\n";}
+			$message.="\nVariable ".$key." = ".$val."\n";
+		}
+	}
+
+	if($method=="browser"){
+		//file_put_contents('gjdbg.html', '<pre>'.$message.'</pre>');
+		echo nl2br($message);
+	}
+	elseif($method=="email"){
+		if($email=="undefined"){
+			$email=$_SERVER["SERVER_ADMIN"];
+		}
+
+		$mresult=mail($email,"Debug Report for ".$_ENV["HOSTNAME"]."",$message);
+		if($mresult==1){
+			echo "Debug Report sent successfully.\n";
+		}
+		else{
+			echo "Failed to send Debug Report.\n";
+		}
 	}
 }
