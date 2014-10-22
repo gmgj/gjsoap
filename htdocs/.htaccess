@@ -1,4 +1,4 @@
-IndexIgnore .htaccess XXSoftwareTools gjphp includes ourAdmin images
+IndexIgnore .htaccess
 DirectoryIndex index.php
 ErrorDocument 400 /400.shtml
 ErrorDocument 401 /401.shtml
@@ -14,5 +14,3 @@ ErrorDocument 500 /500.shtml
 #order deny,allow
 #deny from all
 #</Limit>
-#AuthName garyjohnsoninfo.info
-#Options -Indexes
